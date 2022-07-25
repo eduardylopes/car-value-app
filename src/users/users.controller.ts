@@ -5,13 +5,15 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
-  Put,
   Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { UserDto } from './dtos/user.dto';
 
 @Controller('auth')
 export class UsersController {
@@ -22,17 +24,19 @@ export class UsersController {
     return this.usersService.create(body.email, body.password);
   }
 
+  @Serialize(UserDto)
   @Get('/:id')
   findUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
   }
 
+  @Serialize(UserDto)
   @Get()
   findAllUsers(@Query('email') email: string) {
     return this.usersService.find(email);
   }
 
-  @Put('/:id')
+  @Patch('/:id')
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateUserDto,
