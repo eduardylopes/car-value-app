@@ -1,4 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
@@ -13,7 +17,7 @@ export class UsersService {
     const userAlreadyExists = await this.userRepository.findOneBy({ email });
 
     if (userAlreadyExists) {
-      throw new HttpException('user already exists', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('user already exists');
     }
 
     const user = this.userRepository.create({ email, password });
@@ -25,7 +29,7 @@ export class UsersService {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
-      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('user not found');
     }
 
     return user;
@@ -39,7 +43,7 @@ export class UsersService {
     const user = await this.findOne(id);
 
     if (!user) {
-      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('user not found');
     }
 
     Object.assign(user, attrs);
@@ -51,7 +55,7 @@ export class UsersService {
     const user = await this.findOne(id);
 
     if (!user) {
-      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('user not found');
     }
 
     return this.userRepository.remove(user);
