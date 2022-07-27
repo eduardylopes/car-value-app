@@ -13,7 +13,7 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async create(email: string, password: string) {
+  async create(email: string, password: string): Promise<User> {
     const userAlreadyExists = await this.userRepository.findOneBy({ email });
 
     if (userAlreadyExists) {
@@ -22,10 +22,14 @@ export class UsersService {
 
     const user = this.userRepository.create({ email, password });
 
-    await this.userRepository.save(user);
+    return this.userRepository.save(user);
   }
 
   async findOne(id: number) {
+    if (!id) {
+      return null;
+    }
+
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
